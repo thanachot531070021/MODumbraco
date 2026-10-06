@@ -1,0 +1,8 @@
+# Root-level ignores (project-specific rules live in MODumbraco/.gitignore)
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+bin/
+obj/
