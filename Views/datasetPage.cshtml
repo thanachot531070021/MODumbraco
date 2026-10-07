@@ -1,0 +1,37 @@
+﻿@inherits UmbracoViewPage
+@{
+    Layout = null;
+    var title = Model.Value<string>("pageTitle");
+    if (string.IsNullOrWhiteSpace(title)) { title = Model.Name; }
+    var items = Model.Children().OrderByDescending(x => x.Value<DateTime?>("date"));
+}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@title</title>
+</head>
+<body>
+    <p><a href="@Model.Parent()?.Url()">← กลับ</a></p>
+    <h1>@title</h1>
+    <p>@Model.Value("pageDescription")</p>
+    <p>
+        ส่งขึ้น CKAN: <strong>@(Model.Value<bool>("pkgCkanEnabledDataSet") ? "เปิด" : "ปิด")</strong>
+        · ข้อมูล JSON: <a href="/api/open-data/@Model.Key/items.json">items.json</a>
+        · CSV: <a href="/api/open-data/@Model.Key/items.csv">items.csv</a>
+    </p>
+
+    <h2>รายการ</h2>
+    <ul>
+        @foreach (var item in items)
+        {
+            var date = item.Value<DateTime?>("date");
+            <li>
+                <a href="@item.Url()">@(item.Value<string>("title") is { Length: > 0 } t ? t : item.Name)</a>
+                @if (date.HasValue) { <small>(@date.Value.ToString("yyyy-MM-dd"))</small> }
+            </li>
+        }
+    </ul>
+</body>
+</html>

@@ -5,6 +5,10 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 #endif
 
+// CKAN (uWSGI) can't read chunked request bodies; see Ckan/BufferedRequestContentHandler.cs
+builder.Services.AddTransient<MODumbraco.Ckan.BufferedRequestContentHandler>();
+builder.Services.AddHttpClient("ckan").AddHttpMessageHandler<MODumbraco.Ckan.BufferedRequestContentHandler>();
+
 builder.CreateUmbracoBuilder()
     .AddBackOffice()
     .AddWebsite()

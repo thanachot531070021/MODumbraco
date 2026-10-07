@@ -1,0 +1,48 @@
+﻿@using Umbraco.Cms.Core.Models
+@inherits UmbracoViewPage
+@{
+    Layout = null;
+    var title = Model.Value<string>("title");
+    if (string.IsNullOrWhiteSpace(title)) { title = Model.Name; }
+    var date = Model.Value<DateTime?>("date");
+    var image = Model.Value<MediaWithCrops>("image");
+    var gallery = Model.Value<IEnumerable<MediaWithCrops>>("gallery") ?? Enumerable.Empty<MediaWithCrops>();
+    var attachments = Model.Value<IEnumerable<MediaWithCrops>>("attachments") ?? Enumerable.Empty<MediaWithCrops>();
+    var links = Model.Value<IEnumerable<Link>>("link") ?? Enumerable.Empty<Link>();
+}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@title</title>
+</head>
+<body>
+    <p><a href="@Model.Parent()?.Url()">← กลับ</a></p>
+    <h1>@title</h1>
+    @if (date.HasValue) { <p>วันที่: @date.Value.ToString("yyyy-MM-dd")</p> }
+    <p>ส่งขึ้น CKAN: <strong>@(Model.Value<bool>("publishToCkan") ? "ใช่" : "ไม่")</strong></p>
+
+    @if (image != null) { <p><img src="@image.Url()" alt="@image.Name" style="max-width:480px" /></p> }
+
+    <div>@Html.Raw(Model.Value("contentDetail")?.ToString())</div>
+
+    @if (gallery.Any())
+    {
+        <h2>แกลเลอรี</h2>
+        foreach (var g in gallery) { <img src="@g.Url()" alt="@g.Name" style="max-width:200px" /> }
+    }
+
+    @if (attachments.Any())
+    {
+        <h2>ไฟล์แนบ</h2>
+        <ul>@foreach (var a in attachments) { <li><a href="@a.Url()">@a.Name</a></li> }</ul>
+    }
+
+    @if (links.Any())
+    {
+        <h2>ลิงก์</h2>
+        <ul>@foreach (var l in links) { <li><a href="@l.Url" target="@l.Target">@(string.IsNullOrEmpty(l.Name) ? l.Url : l.Name)</a></li> }</ul>
+    }
+</body>
+</html>
